@@ -40,7 +40,7 @@ JOIN film_category AS c
 ON f.film_id = c.film_id
 JOIN category AS ca
 ON c.category_id = ca.category_id) AS family_category
-WHERE name = "Family" OR "Children";
+WHERE name = "Family";
 
 -- 5. Retrieve the name and email of customers from Canada using both subqueries and joins. To use joins, you will need to identify the relevant tables and their primary and foreign keys.
 SELECT
@@ -76,25 +76,10 @@ WHERE country = "Canada"
 -- 6. Determine which films were starred by the most prolific actor in the Sakila database. A prolific actor is defined as the actor 
 -- who has acted in the most number of films. First, you will need to find the most prolific actor 
 -- and then use that actor_id to find the different films that he or she starred in.
-SELECT 
-    first_name,
-    last_name,
-    COUNT(*) AS film_count
-FROM (
-    SELECT 
-        a.actor_id,
-        a.first_name,
-        a.last_name,
-        f.film_id
-    FROM actor AS a
-    JOIN film_actor AS fa
-        ON a.actor_id = fa.actor_id
-    JOIN film AS f
-        ON fa.film_id = f.film_id
-) AS list
-GROUP BY actor_id, first_name, last_name
-ORDER BY film_count
-LIMIT 1;
+
+SELECT title FROM film WHERE film_id IN (
+  SELECT film_id FROM film_actor WHERE actor_id = (
+    SELECT actor_id FROM film_actor GROUP BY actor_id ORDER BY COUNT(film_id) DESC LIMIT 1));
 
 -- 7. Find the films rented by the most profitable customer in the Sakila database. You can use the customer and payment tables 
 -- to find the most profitable customer, i.e., the customer who has made the largest sum of payments.
